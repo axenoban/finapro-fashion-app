@@ -1,0 +1,6 @@
+{
+  "appId": "com.finapro.fashion",
+  "appName": "FinaPro Fashion",
+  "webDir": "www",
+  "bundledWebRuntime": false
+}
