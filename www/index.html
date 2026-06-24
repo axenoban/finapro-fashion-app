@@ -1,0 +1,407 @@
+```html
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-950">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>FinaPro - Fashion Edition</title>
+  <!-- Tailwind CSS para diseño premium de alta fidelidad -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- React y Babel para compilación ágil en el contenedor nativo -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    /* Desactivar selección de texto para emular comportamiento de app nativa */
+    body {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    input, textarea {
+      -webkit-user-select: text;
+      user-select: text;
+    }
+    /* Scrollbars elegantes estilo terminal */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #020617;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #4f46e5;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="h-full text-slate-100 flex flex-col font-sans">
+  <div id="root" class="h-full flex flex-col"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // === DATOS DE DEMOSTRACIÓN INICIALES ===
+    const DEFAULT_STATE = {
+      fixedExpenses: {
+        alquilerTienda: 1000,
+        alquilerMananera: 100,
+        alquilerCasaTaller: 1800,
+        luz: 200,
+        agua: 70,
+        internet: 300,
+        prestamoBanco: 1700
+      },
+      products: [
+        { id: 'p1', modelo: 'Blusa Morley Rib', talla: 'M', detalle: 'Con Brillo', costoUnitario: 18.5, precioMayor: 24.0, stockDocenas: 15 },
+        { id: 'p2', modelo: 'Polera Invierno Frizado', talla: 'L', detalle: 'Liso', costoUnitario: 22.0, precioMayor: 28.5, stockDocenas: 8 }
+      ],
+      productions: [
+        {
+          id: 'prod_1',
+          fecha: '2026-06-20',
+          modelo: 'Blusa Morley Rib',
+          talla: 'M',
+          detalle: 'Con Brillo',
+          largoCorte: 2.5,
+          precioTelaMetro: 18,
+          modelosEnCorte: 3,
+          prendasPorColor: 6,
+          cantidadColores: 12,
+          costoCostura: 3.5,
+          costoVarios: 1.5,
+          costoAdorno: 9.0,
+          totalPrendas: 216,
+          costoTotalLote: 3996,
+          costoUnitario: 18.5
+        }
+      ],
+      sales: [
+        { id: 's1', fecha: '2026-06-21', canal: 'Tienda Central (Miér/Sáb)', modelo: 'Blusa Morley Rib', cantidadUnidades: 36, tipoVenta: 'Mayor', precioAplicado: 24.0, total: 864, notas: 'Venta de 3 docenas surtidas' }
+      ],
+      householdExpenses: [
+        { id: 'h1', fecha: '2026-06-22', categoria: 'Alimentación', monto: 150, descripcion: 'Compras de la semana' }
+      ]
+    };
+
+    function App() {
+      const [activeTab, setActiveTab] = useState('produccion');
+      const [storeData, setStoreData] = useState(() => {
+        const saved = localStorage.getItem('finapro_fashion_local');
+        return saved ? JSON.parse(saved) : DEFAULT_STATE;
+      });
+
+      // Formularios
+      const [calcForm, setCalcForm] = useState({
+        modelo: 'Blusa Morley Rib',
+        talla: 'M',
+        detalle: 'Con Brillo',
+        largoCorte: 2.5,
+        precioTelaMetro: 18,
+        modelosEnCorte: 3,
+        prendasPorColor: 6,
+        cantidadColores: 12,
+        costoCostura: 3.5,
+        costoVarios: 1.5,
+        costoAdorno: 9.0
+      });
+
+      const [saleForm, setSaleForm] = useState({
+        fecha: new Date().toISOString().split('T')[0],
+        canal: 'Tienda Central (Miér/Sáb)',
+        modelo: 'Blusa Morley Rib',
+        cantidadUnidades: 12,
+        tipoVenta: 'Mayor',
+        precioManual: '',
+        notas: ''
+      });
+
+      const [houseForm, setHouseForm] = useState({
+        fecha: new Date().toISOString().split('T')[0],
+        categoria: 'Alimentación',
+        monto: '',
+        descripcion: ''
+      });
+
+      const [editFixed, setEditFixed] = useState(false);
+      const [fixedForm, setFixedForm] = useState({ ...storeData.fixedExpenses });
+
+      // Guardado Local Seguro
+      useEffect(() => {
+        localStorage.setItem('finapro_fashion_local', JSON.stringify(storeData));
+      }, [storeData]);
+
+      // Lógica de Costeo Textil
+      const calculateCUP = (params) => {
+        const totalPrendas = params.modelosEnCorte * params.prendasPorColor * params.cantidadColores;
+        const costoTelaTotal = params.largoCorte * params.cantidadColores * params.precioTelaMetro;
+        const costoTelaUnitario = totalPrendas > 0 ? (costoTelaTotal / totalPrendas) * 1.01 : 0; // 1% de merma de tela
+
+        const cup = costoTelaUnitario + Number(params.costoCostura) + Number(params.costoVarios) + Number(params.costoAdorno);
+        const pvMayor = cup * 1.30; // Margen de ganancia mayorista
+        return {
+          totalPrendas,
+          costoTelaUnitario,
+          cup,
+          pvMayor,
+          pvCuarta: pvMayor * 1.15,
+          pvUnidad: pvMayor * 1.30,
+          costoTotalLote: cup * totalPrendas
+        };
+      };
+
+      const currentCUP = calculateCUP(calcForm);
+
+      // Manejadores de Eventos
+      const handleSaveProduction = (e) => {
+        e.preventDefault();
+        const calculated = calculateCUP(calcForm);
+        const newProd = {
+          id: 'prod_' + Date.now(),
+          fecha: new Date().toISOString().split('T')[0],
+          ...calcForm,
+          totalPrendas: calculated.totalPrendas,
+          costoTotalLote: calculated.costoTotalLote,
+          costoUnitario: calculated.cup
+        };
+
+        const updatedProducts = [...storeData.products];
+        const prodIdx = updatedProducts.findIndex(p => p.modelo === calcForm.modelo);
+
+        if (prodIdx >= 0) {
+          updatedProducts[prodIdx].stockDocenas += Math.round(calculated.totalPrendas / 12);
+          updatedProducts[prodIdx].costoUnitario = calculated.cup;
+          updatedProducts[prodIdx].precioMayor = calculated.pvMayor;
+        } else {
+          updatedProducts.push({
+            id: 'p_' + Date.now(),
+            modelo: calcForm.modelo,
+            talla: calcForm.talla,
+            detalle: calcForm.detalle,
+            costoUnitario: calculated.cup,
+            precioMayor: calculated.pvMayor,
+            stockDocenas: Math.round(calculated.totalPrendas / 12)
+          });
+        }
+
+        setStoreData({
+          ...storeData,
+          productions: [newProd, ...storeData.productions],
+          products: updatedProducts
+        });
+        alert('Lote registrado en el inventario.');
+      };
+
+      const handleSaveSale = (e) => {
+        e.preventDefault();
+        const match = storeData.products.find(p => p.modelo === saleForm.modelo);
+        const costoUnit = match ? match.costoUnitario : 18.0;
+        const precioBase = match ? match.precioMayor : (costoUnit * 1.30);
+
+        let precioCalc = precioBase;
+        if (saleForm.tipoVenta === 'Cuarta') precioCalc = precioBase * 1.15;
+        if (saleForm.tipoVenta === 'Unidad') precioCalc = precioBase * 1.30;
+        if (saleForm.tipoVenta === 'Liquidación de Saldo') precioCalc = costoUnit * 0.90;
+
+        const finalPrice = saleForm.precioManual ? parseFloat(saleForm.precioManual) : precioCalc;
+        const totalVenta = finalPrice * parseInt(saleForm.cantidadUnidades);
+
+        const newSale = {
+          id: 'sale_' + Date.now(),
+          fecha: saleForm.fecha,
+          canal: saleForm.canal,
+          modelo: saleForm.modelo,
+          cantidadUnidades: parseInt(saleForm.cantidadUnidades),
+          tipoVenta: saleForm.tipoVenta,
+          precioAplicado: finalPrice,
+          total: totalVenta,
+          notas: saleForm.notas
+        };
+
+        setStoreData({
+          ...storeData,
+          sales: [newSale, ...storeData.sales]
+        });
+        alert('Venta procesada exitosamente.');
+      };
+
+      const handleSaveHouseExpense = (e) => {
+        e.preventDefault();
+        const newExp = {
+          id: 'h_' + Date.now(),
+          fecha: houseForm.fecha,
+          categoria: houseForm.categoria,
+          monto: parseFloat(houseForm.monto),
+          descripcion: houseForm.descripcion
+        };
+        setStoreData({
+          ...storeData,
+          householdExpenses: [newExp, ...storeData.householdExpenses]
+        });
+        setHouseForm({ ...houseForm, monto: '', descripcion: '' });
+      };
+
+      // Cálculos del Balance
+      const fixedMonthlySum = Object.values(storeData.fixedExpenses).reduce((a, b) => a + b, 0);
+      const totalVendido = storeData.sales.reduce((sum, s) => sum + s.total, 0);
+      const totalCostoVendido = storeData.sales.reduce((sum, s) => {
+        const match = storeData.products.find(p => p.modelo === s.modelo);
+        return sum + ((match ? match.costoUnitario : 18) * s.cantidadUnidades);
+      }, 0);
+      const utilidadBruta = totalVendido - totalCostoVendido;
+      const totalGastosCasa = storeData.householdExpenses.reduce((sum, h) => sum + h.monto, 0);
+      const flujoNeto = utilidadBruta - fixedMonthlySum - totalGastosCasa;
+
+      // Planificación Estacional (Bolivia)
+      const mesesLabels = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+      const currentMonthIdx = new Date().getMonth();
+      const seasonMultipliers = [0.6, 0.6, 0.7, 1.5, 1.7, 1.5, 1.4, 0.8, 0.7, 0.8, 1.8, 2.2];
+
+      const proyecciones = Array.from({ length: 12 }, (_, i) => {
+        const idx = (currentMonthIdx + i) % 12;
+        const mult = seasonMultipliers[idx];
+        const ingProj = (totalVendido > 0 ? totalVendido : 12000) * mult;
+        return {
+          mes: mesesLabels[idx],
+          ingresos: Math.round(ingProj),
+          egresos: Math.round(((totalCostoVendido > 0 ? totalCostoVendido : 8000) * mult) + fixedMonthlySum)
+        };
+      });
+
+      return (
+        <div class="flex-grow flex flex-col min-h-0 select-none pb-safe">
+          <header class="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-15 shadow-md">
+            <h1 class="text-md font-bold tracking-tight text-white flex items-center gap-2">
+              👔 FinaPro <span class="text-[10px] bg-indigo-950 text-indigo-400 px-2 py-0.5 rounded font-mono border border-indigo-900">Fashion v3.0</span>
+            </h1>
+            <p class="text-[11px] text-slate-400">Control de Confección, Mesa de Corte y Ventas de Feria</p>
+          </header>
+
+          <main class="flex-grow overflow-y-auto p-4 space-y-4">
+            
+            {/* TABS DE SECCIÓN */}
+            <div class="grid grid-cols-5 bg-slate-900 p-1 rounded-xl border border-slate-800 text-center text-xs font-semibold">
+              <button onClick={() => setActiveTab('produccion')} class={`py-2 rounded-lg ${activeTab === 'produccion' ? 'bg-indigo-600 text-white' : 'text-slate-400'}`}>✂️</button>
+              <button onClick={() => setActiveTab('ventas')} class={`py-2 rounded-lg ${activeTab === 'ventas' ? 'bg-indigo-600 text-white' : 'text-slate-400'}`}>🛍️</button>
+              <button onClick={() => setActiveTab('gastos')} class={`py-2 rounded-lg ${activeTab === 'gastos' ? 'bg-indigo-600 text-white' : 'text-slate-400'}`}>🏠</button>
+              <button onClick={() => setActiveTab('balance')} class={`py-2 rounded-lg ${activeTab === 'balance' ? 'bg-indigo-600 text-white' : 'text-slate-400'}`}>📊</button>
+              <button onClick={() => setActiveTab('proyecciones')} class={`py-2 rounded-lg ${activeTab === 'proyecciones' ? 'bg-indigo-600 text-white' : 'text-slate-400'}`}>📈</button>
+            </div>
+
+            {/* TAB: PRODUCCIÓN */}
+            {activeTab === 'produccion' && (
+              <div class="space-y-4">
+                <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-3">
+                  <h3 class="text-sm font-bold text-white">📐 Tizada en Mesa de Corte</h3>
+                  <form onSubmit={handleSaveProduction} class="space-y-3 text-xs">
+                    <div class="grid grid-cols-2 gap-3">
+                      <div>
+                        <label class="text-slate-400 block mb-1">Modelo</label>
+                        <input type="text" value={calcForm.modelo} onChange={e => setCalcForm({...calcForm, modelo: e.target.value})} class="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-850 text-white" />
+                      </div>
+                      <div>
+                        <label class="text-slate-400 block mb-1">Corte (m)</label>
+                        <input type="number" step="any" value={calcForm.largoCorte} onChange={e => setCalcForm({...calcForm, largoCorte: parseFloat(e.target.value) || 0})} class="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-850 text-white font-mono" />
+                      </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                      <div>
+                        <label class="text-slate-400 block mb-1">Precio Tela/m</label>
+                        <input type="number" value={calcForm.precioTelaMetro} onChange={e => setCalcForm({...calcForm, precioTelaMetro: parseFloat(e.target.value) || 0})} class="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-850 text-white font-mono" />
+                      </div>
+                      <div>
+                        <label class="text-slate-400 block mb-1">Costo Costura</label>
+                        <input type="number" step="any" value={calcForm.costoCostura} onChange={e => setCalcForm({...calcForm, costoCostura: parseFloat(e.target.value) || 0})} class="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-850 text-white font-mono" />
+                      </div>
+                    </div>
+                    <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-2.5 rounded-xl text-xs">Guardar Lote de Producción</button>
+                  </form>
+                </div>
+
+                <div class="bg-gradient-to-br from-indigo-950 to-slate-900 border border-indigo-900/40 p-4 rounded-xl text-center space-y-1">
+                  <span class="text-[10px] text-indigo-400 uppercase font-bold block">Costo Unitario Esperado (CUP)</span>
+                  <span class="text-2xl font-extrabold text-emerald-400 block">Bs. {currentCUP.cup.toFixed(2)}</span>
+                  <span class="text-[10px] text-slate-300 block">Mayor sugerido: Bs. {currentCUP.pvMayor.toFixed(1)} (30% ganancia)</span>
+                </div>
+              </div>
+            )}
+
+            {/* TAB: VENTAS */}
+            {activeTab === 'ventas' && (
+              <div class="space-y-4">
+                <form onSubmit={handleSaveSale} class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-3 text-xs">
+                  <h3 class="text-sm font-bold text-white">🛍️ Nueva Venta de Feria</h3>
+                  <div>
+                    <label class="text-slate-400 block mb-1">Canal de Venta</label>
+                    <select value={saleForm.canal} onChange={e => setSaleForm({...saleForm, canal: e.target.value})} class="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-850 text-white">
+                      <option value="Tienda Central (Miér/Sáb)">Tienda Central (Miércoles/Sábado)</option>
+                      <option value="Venta Madrugadora">Venta Mañanera (5:00 AM - 7:00 AM)</option>
+                      <option value="WhatsApp">WhatsApp / Transferencia directa</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="text-slate-400 block mb-1">Prenda</label>
+                    <select value={saleForm.modelo} onChange={e => setSaleForm({...saleForm, modelo: e.target.value})} class="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-850 text-white">
+                      {storeData.products.map(p => (
+                        <option key={p.id} value={p.modelo}>{p.modelo} ({p.talla})</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div class="grid grid-cols-2 gap-3">
+                    <div>
+                      <label class="text-slate-400 block mb-1">Cantidad (U.)</label>
+                      <input type="number" value={saleForm.cantidadUnidades} onChange={e => setSaleForm({...saleForm, cantidadUnidades: e.target.value})} class="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-850 text-white font-mono" />
+                    </div>
+                    <div>
+                      <label class="text-slate-400 block mb-1">Tipo de Venta</label>
+                      <select value={saleForm.tipoVenta} onChange={e => setSaleForm({...saleForm, tipoVenta: e.target.value})} class="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-850 text-white">
+                        <option value="Mayor">Mayor (Docena)</option>
+                        <option value="Cuarta">Por Cuarta</option>
+                        <option value="Unidad">Por Unidad</option>
+                        <option value="Liquidación de Saldo">Saldo</option>
+                      </select>
+                    </div>
+                  </div>
+                  <button type="submit" class="w-full bg-emerald-600 text-slate-950 font-bold py-2.5 rounded-xl text-xs">Registrar en Caja de Feria</button>
+                </form>
+
+                <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2">
+                  <h4 class="text-xs font-bold text-slate-400 uppercase">Ventas Recientes</h4>
+                  <div class="divide-y divide-slate-850">
+                    {storeData.sales.map(s => (
+                      <div key={s.id} class="flex justify-between items-center py-2 text-xs">
+                        <div>
+                          <span class="text-white font-semibold block">{s.modelo}</span>
+                          <span class="text-[10px] text-slate-400">{s.canal} ({s.tipoVenta})</span>
+                        </div>
+                        <span class="font-extrabold text-emerald-400 font-mono">Bs. {s.total}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB: GASTOS */}
+            {activeTab === 'gastos' && (
+              <div class="space-y-4">
+                <form onSubmit={handleSaveHouseExpense} class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-3 text-xs">
+                  <h3 class="text-sm font-bold text-white">🏠 Control de Gastos del Hogar</h3>
+                  <div class="grid grid-cols-2 gap-3">
+                    <div>
+                      <label class="text-slate-400 block mb-1">Categoría</label>
+                      <select value={houseForm.categoria} onChange={e => setHouseForm({...houseForm, categoria: e.target.value})} class="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-850 text-white">
+                        <option value="Alimentación">Alimentación</option>
+                        <option value="Salud">Salud</option>
+                        <option value="Educación">Educación</option>
+                        <option value="Hogar">Hogar</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="text-slate-400 block mb-1">Monto (Bs)</label>
+                      <input type="number" value={houseForm.monto} onChange={e => setHouseForm({...houseForm, monto: e.target.value})} class="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-850 text-white font-mono" required />
+                    </div>
+                  </div>
+                  <button 
