@@ -1,49 +1,557 @@
 
 <!DOCTYPE html>
-<html lang="es" class="h-full bg-slate-950">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>FinaPro - Fashion Edition</title>
-  <!-- Tailwind CSS para diseño premium de alta fidelidad -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- React y Babel para compilación ágil en el contenedor nativo -->
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
-    /* Desactivar selección de texto para emular comportamiento de app nativa */
+    /* VARIABLES DE DISEÑO PREMIUM (ESTILO DARK SLATE DE ALTA FIDELIDAD) */
+    :root {
+      --bg-main: #020617;
+      --bg-card: #0f172a;
+      --bg-input: #020617;
+      --border-color: #1e293b;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --color-primary: #6366f1; /* Indigo */
+      --color-primary-hover: #4f46e5;
+      --color-success: #10b981; /* Emerald */
+      --color-danger: #f43f5e; /* Rose */
+      --color-warning: #f59e0b; /* Amber */
+      --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
     body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      display: flex;
+      flex-col: column;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
       -webkit-touch-callout: none;
       -webkit-user-select: none;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
     }
-    input, textarea {
-      -webkit-user-select: text;
-      user-select: text;
+
+    /* HEADER */
+    header {
+      background-color: #0b0f19;
+      border-b: 1px solid var(--border-color);
+      padding: 15px;
+      flex-shrink: 0;
+      border-bottom: 1px solid var(--border-color);
     }
-    /* Scrollbars elegantes estilo terminal */
-    ::-webkit-scrollbar {
-      width: 4px;
-      height: 4px;
+
+    header h1 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    ::-webkit-scrollbar-track {
-      background: #020617;
+
+    header h1 span {
+      font-size: 0.65rem;
+      background-color: #1e1b4b;
+      color: #818cf8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid #312e81;
     }
-    ::-webkit-scrollbar-thumb {
-      background: #4f46e5;
-      border-radius: 9999px;
+
+    header p {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* BOTONES DE NAVEGACIÓN TÁCTIL */
+    .nav-tabs {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      background-color: #0b0f19;
+      padding: 4px;
+      border-bottom: 1px solid var(--border-color);
+      flex-shrink: 0;
+    }
+
+    .nav-tabs button {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 10px 2px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-tabs button span.tab-label {
+      font-size: 0.55rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-tabs button.active {
+      background-color: var(--color-primary);
+      color: var(--text-main);
+    }
+
+    /* CONTENEDOR DE CONTENIDO (CON SCROLL EN MÓVILES) */
+    main {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 15px;
+      padding-bottom: calc(20px + var(--safe-area-bottom));
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .tab-content.active {
+      display: flex;
+    }
+
+    /* TARJETAS Y CONTENEDORES */
+    .card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card h3 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-subtitle {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: -8px;
+    }
+
+    /* FORMULARIOS */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .form-group label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    input, select, textarea {
+      background-color: var(--bg-input);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      outline: none;
+      width: 100%;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--color-primary);
+    }
+
+    /* BOTONES */
+    .btn {
+      background-color: var(--color-primary);
+      color: var(--text-main);
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-align: center;
+      width: 100%;
+      transition: background 0.2s;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-success { background-color: var(--color-success); color: #020617; }
+    .btn-danger { background-color: var(--color-danger); }
+
+    /* ESTILO DE RESULTADOS Y MÉTRICAS */
+    .metric-badge {
+      background-color: #111827;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .metric-title {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: bold;
+    }
+
+    .metric-value {
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin-top: 4px;
+      font-family: monospace;
+    }
+
+    /* TABLAS RESPONSIVAS */
+    .table-container {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.75rem;
+      text-align: left;
+    }
+
+    th {
+      background-color: #0b0f19;
+      color: var(--text-muted);
+      font-weight: 600;
+      padding: 10px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    td {
+      padding: 10px;
+      border-bottom: 1px solid #1e293b40;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .text-right { text-align: right; }
+    .font-mono { font-family: monospace; }
+    .text-success { color: var(--color-success); }
+    .text-danger { color: var(--color-danger); }
+    .text-warning { color: var(--color-warning); }
+
+    /* LISTAS RÁPIDAS DE GASTOS */
+    .list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      background-color: #0b0f1960;
+      border-radius: 10px;
+      border: 1px solid #1e293b40;
     }
   </style>
 </head>
-<body class="h-full text-slate-100 flex flex-col font-sans">
-  <div id="root" class="h-full flex flex-col"></div>
+<body>
 
-  <script type="text/babel">
-    const { useState, useEffect } = React;
+  <!-- HEADER -->
+  <header>
+    <h1>👔 FinaPro <span>Fashion v3.0 Offline</span></h1>
+    <p>Gestión de Confección, Mesa de Corte y Caja de Ferias</p>
+  </header>
 
-    // === DATOS DE DEMOSTRACIÓN INICIALES ===
+  <!-- NAVEGACIÓN MÓVIL TÁCTIL -->
+  <div class="nav-tabs">
+    <button onclick="switchTab('produccion')" id="btn-produccion" class="active">
+      <span>✂️</span>
+      <span class="tab-label">Cortes</span>
+    </button>
+    <button onclick="switchTab('ventas')" id="btn-ventas">
+      <span>🛍️</span>
+      <span class="tab-label">Ventas</span>
+    </button>
+    <button onclick="switchTab('gastos')" id="btn-gastos">
+      <span>🏠</span>
+      <span class="tab-label">Hogar</span>
+    </button>
+    <button onclick="switchTab('balance')" id="btn-balance">
+      <span>📊</span>
+      <span class="tab-label">Balance</span>
+    </button>
+    <button onclick="switchTab('proyecciones')" id="btn-proyecciones">
+      <span>📈</span>
+      <span class="tab-label">Proyecc.</span>
+    </button>
+  </div>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main>
+
+    <!-- ================= TAB: PRODUCCIÓN ================= -->
+    <div id="tab-produccion" class="tab-content active">
+      <div class="card">
+        <h3>📐 Tizada en Mesa de Corte</h3>
+        <p class="card-subtitle">Introduce los datos del trazo para autocalcular el costo unitario real.</p>
+        
+        <form id="form-produccion" onsubmit="saveProduction(event)" class="space-y-4">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Modelo</label>
+              <input type="text" id="p-modelo" value="Blusa Morley Rib" required>
+            </div>
+            <div class="form-group">
+              <label>Largo Corte (m)</label>
+              <input type="number" step="any" id="p-largo" value="2.5" oninput="runProductionCalculator()" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Precio Tela/m (Bs.)</label>
+              <input type="number" step="any" id="p-precio" value="18" oninput="runProductionCalculator()" required>
+            </div>
+            <div class="form-group">
+              <label>Costo Confección/u</label>
+              <input type="number" step="any" id="p-confeccion" value="3.5" oninput="runProductionCalculator()" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Modelos en Trazo</label>
+              <input type="number" id="p-modelos" value="3" oninput="runProductionCalculator()" required>
+            </div>
+            <div class="form-group">
+              <label>Prendas x Color</label>
+              <input type="number" id="p-prendas-color" value="6" oninput="runProductionCalculator()" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Cant. Colores</label>
+              <input type="number" id="p-colores" value="12" oninput="runProductionCalculator()" required>
+            </div>
+            <div class="form-group">
+              <label>Detalle/Adornos (Bs/u)</label>
+              <input type="number" step="any" id="p-adorno" value="9.0" oninput="runProductionCalculator()" required>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-success">✂️ Registrar Lote en Catálogo</button>
+        </form>
+      </div>
+
+      <div class="metric-badge" style="border-color: var(--color-primary);">
+        <div class="metric-title" style="color: var(--color-primary);">Costo Unitario de Producción (CUP)</div>
+        <div class="metric-value text-success" id="calc-cup">Bs. 0.00</div>
+        <div class="card-subtitle" style="margin-top: 5px;" id="calc-sug-mayor">Mayorista sugerido: Bs. 0.00</div>
+      </div>
+    </div>
+
+    <!-- ================= TAB: VENTAS ================= -->
+    <div id="tab-ventas" class="tab-content">
+      <div class="card">
+        <h3>🛍️ Registrar Venta de Feria</h3>
+        <form id="form-venta" onsubmit="saveSale(event)">
+          <div class="form-group">
+            <label>Canal / Día de Venta</label>
+            <select id="v-canal">
+              <option value="Tienda Central (Miér/Sáb)">Tienda Central (Miércoles/Sábado)</option>
+              <option value="Venta Mañanera">Venta Mañanera (5:00 AM - 7:00 AM)</option>
+              <option value="WhatsApp / Preventa">WhatsApp (Reservas y Transferencias)</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-top: 10px;">
+            <label>Prenda disponible</label>
+            <select id="v-modelo"></select>
+          </div>
+
+          <div class="form-row" style="margin-top: 10px;">
+            <div class="form-group">
+              <label>Cantidad (Prendas)</label>
+              <input type="number" id="v-cantidad" value="12" required>
+            </div>
+            <div class="form-group">
+              <label>Formato de Venta</label>
+              <select id="v-formato">
+                <option value="Mayor">Mayorista (Docena)</option>
+                <option value="Cuarta">Por Cuarta</option>
+                <option value="Unidad">Minorista (Unidad)</option>
+                <option value="Liquidación de Saldo">Saldos / Liquidación</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 10px;">
+            <label>Precio Unitario Personalizado (Opcional)</label>
+            <input type="number" step="any" id="v-precio" placeholder="Dejar vacío para usar precio automático">
+          </div>
+
+          <button type="submit" class="btn" style="margin-top: 15px;">🛍️ Confirmar Venta de Feria</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3>📝 Ventas Recientes</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Modelo</th>
+                <th>Canal</th>
+                <th class="text-right">Cant.</th>
+                <th class="text-right">Total</th>
+              </tr>
+            </thead>
+            <tbody id="lista-ventas"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= TAB: GASTOS ================= -->
+    <div id="tab-gastos" class="tab-content">
+      <div class="card">
+        <h3>🏠 Registrar Gasto del Hogar</h3>
+        <form id="form-gasto-hogar" onsubmit="saveHouseExpense(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Categoría</label>
+              <select id="g-categoria">
+                <option value="Alimentación">Alimentación</option>
+                <option value="Salud/Medicina">Salud/Medicina</option>
+                <option value="Educación">Educación</option>
+                <option value="Ocio/Familiar">Ocio/Familiar</option>
+                <option value="Varios Casa">Varios Casa</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Monto (Bs.)</label>
+              <input type="number" step="any" id="g-monto" required>
+            </div>
+          </div>
+          <div class="form-group" style="margin-top: 10px;">
+            <label>Descripción</label>
+            <input type="text" id="g-descripcion" placeholder="Ej: Compras del mercado">
+          </div>
+          <button type="submit" class="btn btn-danger" style="margin-top: 10px;">🏠 Registrar Gasto Familiar</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3>🏦 Gastos Fijos de Operación (Mensuales)</h3>
+        <div id="lista-gastos-fijos" class="space-y-2"></div>
+      </div>
+    </div>
+
+    <!-- ================= TAB: BALANCE ================= -->
+    <div id="tab-balance" class="tab-content">
+      <div class="card">
+        <h3>📊 Estado de Resultados de la Tienda</h3>
+        <p class="card-subtitle">Cálculo de rentabilidad real combinada.</p>
+        
+        <div class="space-y-3" style="font-size: 0.8rem; margin-top: 10px;">
+          <div class="list-item">
+            <span>Ingresos Brutos de Feria:</span>
+            <span class="text-success font-mono font-bold" id="b-ingresos">Bs. 0.00</span>
+          </div>
+          <div class="list-item">
+            <span>Costo de Producción Vendido:</span>
+            <span class="text-danger font-mono font-bold" id="b-costos">Bs. 0.00</span>
+          </div>
+          <div class="list-item">
+            <span>Utilidad Bruta (Ganancia Pre-Operativa):</span>
+            <span class="text-success font-mono font-bold" id="b-utilidad-bruta">Bs. 0.00</span>
+          </div>
+          <div class="list-item">
+            <span>Gastos Fijos de Operación:</span>
+            <span class="text-danger font-mono font-bold" id="b-fijos">Bs. 0.00</span>
+          </div>
+          <div class="list-item">
+            <span>Gastos Familiares Extraídos:</span>
+            <span class="text-danger font-mono font-bold" id="b-familiares">Bs. 0.00</span>
+          </div>
+          <div class="metric-badge" style="background-color: #0b0f19;">
+            <div class="metric-title">Excedente Neto de Caja (Socios)</div>
+            <div class="metric-value" id="b-neto">Bs. 0.00</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>📱 Sincronización offline con tu Socio</h3>
+        <p class="card-subtitle">Exporta tus datos en un código de texto para enviarlo por WhatsApp a tu socio.</p>
+        <div class="form-row" style="margin-top: 10px;">
+          <button onclick="exportData()" class="btn btn-success">📤 Exportar Datos</button>
+          <button onclick="importDataPrompt()" class="btn">📥 Importar Datos</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= TAB: PROYECCIONES ================= -->
+    <div id="tab-proyecciones" class="tab-content">
+      <div class="card">
+        <h3>📈 Planificación de Demanda Estacional</h3>
+        <p class="card-subtitle">Predicción basada en los picos estacionales de la moda en Bolivia (Ene-Mar bajo, May Día de la Madre, Invierno, Fin de Año).</p>
+        
+        <div class="table-container" style="margin-top: 10px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Mes</th>
+                <th class="text-right">Venta Estimada</th>
+                <th class="text-right">Egresos Est.</th>
+                <th class="text-right">Flujo Neto</th>
+              </tr>
+            </thead>
+            <tbody id="lista-proyecciones"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- LÓGICA DE NEGOCIO VANILLA JAVASCRIPT (SÚPER RÁPIDA Y TOTALMENTE LOCAL) -->
+  <script>
+    // === ESTADO POR DEFECTO DEL NEGOCIO ===
     const DEFAULT_STATE = {
       fixedExpenses: {
         alquilerTienda: 1000,
@@ -79,390 +587,322 @@
         }
       ],
       sales: [
-        { id: 's1', fecha: '2026-06-21', canal: 'Tienda Central (Miér/Sáb)', modelo: 'Blusa Morley Rib', cantidadUnidades: 36, tipoVenta: 'Mayor', precioAplicado: 24.0, total: 864, notas: 'Venta de 3 docenas surtidas' }
+        { id: 's1', fecha: '2026-06-21', canal: 'Tienda Central (Miér/Sáb)', modelo: 'Blusa Morley Rib', cantidadUnidades: 36, tipoVenta: 'Mayor', precioAplicado: 24.0, total: 864, notas: 'Venta de 3 docenas' }
       ],
       householdExpenses: [
-        { id: 'h1', fecha: '2026-06-22', categoria: 'Alimentación', monto: 150, descripcion: 'Compras de la semana' }
+        { id: 'h1', fecha: '2026-06-22', categoria: 'Alimentación', monto: 150, descripcion: 'Mercado de la semana' }
       ]
     };
 
-    function App() {
-      const [activeTab, setActiveTab] = useState('produccion');
-      const [storeData, setStoreData] = useState(() => {
-        const saved = localStorage.getItem('finapro_fashion_local');
-        return saved ? JSON.parse(saved) : DEFAULT_STATE;
-      });
+    let storeData = DEFAULT_STATE;
 
-      // Formularios
-      const [calcForm, setCalcForm] = useState({
-        modelo: 'Blusa Morley Rib',
-        talla: 'M',
-        detalle: 'Con Brillo',
-        largoCorte: 2.5,
-        precioTelaMetro: 18,
-        modelosEnCorte: 3,
-        prendasPorColor: 6,
-        cantidadColores: 12,
-        costoCostura: 3.5,
-        costoVarios: 1.5,
-        costoAdorno: 9.0
-      });
+    // === ARRANCAR LA APLICACIÓN ===
+    window.onload = function() {
+      loadLocalData();
+      runProductionCalculator();
+      renderAll();
+    };
 
-      const [saleForm, setSaleForm] = useState({
-        fecha: new Date().toISOString().split('T')[0],
-        canal: 'Tienda Central (Miér/Sáb)',
-        modelo: 'Blusa Morley Rib',
-        cantidadUnidades: 12,
-        tipoVenta: 'Mayor',
-        precioManual: '',
-        notas: ''
-      });
-
-      const [houseForm, setHouseForm] = useState({
-        fecha: new Date().toISOString().split('T')[0],
-        categoria: 'Alimentación',
-        monto: '',
-        descripcion: ''
-      });
-
-      const [editFixed, setEditFixed] = useState(false);
-      const [fixedForm, setFixedForm] = useState({ ...storeData.fixedExpenses });
-
-      // Guardado Local Seguro
-      useEffect(() => {
-        localStorage.setItem('finapro_fashion_local', JSON.stringify(storeData));
-      }, [storeData]);
-
-      // Lógica de Costeo Textil
-      const calculateCUP = (params) => {
-        const totalPrendas = params.modelosEnCorte * params.prendasPorColor * params.cantidadColores;
-        const costoTelaTotal = params.largoCorte * params.cantidadColores * params.precioTelaMetro;
-        const costoTelaUnitario = totalPrendas > 0 ? (costoTelaTotal / totalPrendas) * 1.01 : 0; // 1% de merma de tela
-
-        const cup = costoTelaUnitario + Number(params.costoCostura) + Number(params.costoVarios) + Number(params.costoAdorno);
-        const pvMayor = cup * 1.30; // Margen de ganancia mayorista
-        return {
-          totalPrendas,
-          costoTelaUnitario,
-          cup,
-          pvMayor,
-          pvCuarta: pvMayor * 1.15,
-          pvUnidad: pvMayor * 1.30,
-          costoTotalLote: cup * totalPrendas
-        };
-      };
-
-      const currentCUP = calculateCUP(calcForm);
-
-      // Manejadores de Eventos
-      const handleSaveProduction = (e) => {
-        e.preventDefault();
-        const calculated = calculateCUP(calcForm);
-        const newProd = {
-          id: 'prod_' + Date.now(),
-          fecha: new Date().toISOString().split('T')[0],
-          ...calcForm,
-          totalPrendas: calculated.totalPrendas,
-          costoTotalLote: calculated.costoTotalLote,
-          costoUnitario: calculated.cup
-        };
-
-        const updatedProducts = [...storeData.products];
-        const prodIdx = updatedProducts.findIndex(p => p.modelo === calcForm.modelo);
-
-        if (prodIdx >= 0) {
-          updatedProducts[prodIdx].stockDocenas += Math.round(calculated.totalPrendas / 12);
-          updatedProducts[prodIdx].costoUnitario = calculated.cup;
-          updatedProducts[prodIdx].precioMayor = calculated.pvMayor;
-        } else {
-          updatedProducts.push({
-            id: 'p_' + Date.now(),
-            modelo: calcForm.modelo,
-            talla: calcForm.talla,
-            detalle: calcForm.detalle,
-            costoUnitario: calculated.cup,
-            precioMayor: calculated.pvMayor,
-            stockDocenas: Math.round(calculated.totalPrendas / 12)
-          });
+    // Cargar del almacenamiento local
+    function loadLocalData() {
+      const saved = localStorage.getItem('finapro_fashion_data');
+      if (saved) {
+        try {
+          storeData = JSON.parse(saved);
+        } catch(e) {
+          storeData = DEFAULT_STATE;
         }
+      }
+    }
 
-        setStoreData({
-          ...storeData,
-          productions: [newProd, ...storeData.productions],
-          products: updatedProducts
-        });
-        alert('Lote registrado en el inventario.');
+    // Guardar en el almacenamiento local
+    function saveLocalData() {
+      localStorage.setItem('finapro_fashion_data', JSON.stringify(storeData));
+      renderAll();
+    }
+
+    // === NAVEGACIÓN ENTRE TABS ===
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelectorAll('.nav-tabs button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+
+      document.getElementById('tab-' + tabId).classList.add('active');
+      document.getElementById('btn-' + tabId).classList.add('active');
+    }
+
+    / // === MOTOR CALCULADORA DE COSTOS (MESA DE CORTE) ===
+    function calculateCUPValues() {
+      const largo = parseFloat(document.getElementById('p-largo').value) || 0;
+      const precio = parseFloat(document.getElementById('p-precio').value) || 0;
+      const modelos = parseInt(document.getElementById('p-modelos').value) || 0;
+      const prendasColor = parseInt(document.getElementById('p-prendas-color').value) || 0;
+      const colores = parseInt(document.getElementById('p-colores').value) || 0;
+      const confeccion = parseFloat(document.getElementById('p-confeccion').value) || 0;
+      const adorno = parseFloat(document.getElementById('p-adorno').value) || 0;
+
+      const totalPrendas = modelos * prendasColor * colores;
+      const costoTelaTotal = largo * colores * precio;
+      const costoTelaUnitario = totalPrendas > 0 ? (costoTelaTotal / totalPrendas) * 1.01 : 0; // 1% merma integrada
+
+      const cup = costoTelaUnitario + confeccion + adorno + 1.5; // 1.5 Bs de gastos varios de confección (hilo, pasajes)
+      const pvMayor = cup * 1.30; // Margen de ganancia de confección plano del 30%
+
+      return { totalPrendas, cup, pvMayor };
+    }
+
+    function runProductionCalculator() {
+      const values = calculateCUPValues();
+      document.getElementById('calc-cup').innerText = 'Bs. ' + values.cup.toFixed(2);
+      document.getElementById('calc-sug-mayor').innerText = 'Mayorista sugerido: Bs. ' + values.pvMayor.toFixed(1) + ' (30% ganancia)';
+    }
+
+    // Guardar lote en el inventario
+    function saveProduction(event) {
+      event.preventDefault();
+      const modelo = document.getElementById('p-modelo').value;
+      const values = calculateCUPValues();
+
+      const newProd = {
+        id: 'prod_' + Date.now(),
+        fecha: new Date().toISOString().split('T')[0],
+        modelo: modelo,
+        largoCorte: parseFloat(document.getElementById('p-largo').value),
+        precioTelaMetro: parseFloat(document.getElementById('p-precio').value),
+        totalPrendas: values.totalPrendas,
+        costoUnitario: values.cup
       };
 
-      const handleSaveSale = (e) => {
-        e.preventDefault();
-        const match = storeData.products.find(p => p.modelo === saleForm.modelo);
-        const costoUnit = match ? match.costoUnitario : 18.0;
-        const precioBase = match ? match.precioMayor : (costoUnit * 1.30);
+      storeData.productions.unshift(newProd);
 
-        let precioCalc = precioBase;
-        if (saleForm.tipoVenta === 'Cuarta') precioCalc = precioBase * 1.15;
-        if (saleForm.tipoVenta === 'Unidad') precioCalc = precioBase * 1.30;
-        if (saleForm.tipoVenta === 'Liquidación de Saldo') precioCalc = costoUnit * 0.90;
-
-        const finalPrice = saleForm.precioManual ? parseFloat(saleForm.precioManual) : precioCalc;
-        const totalVenta = finalPrice * parseInt(saleForm.cantidadUnidades);
-
-        const newSale = {
-          id: 'sale_' + Date.now(),
-          fecha: saleForm.fecha,
-          canal: saleForm.canal,
-          modelo: saleForm.modelo,
-          cantidadUnidades: parseInt(saleForm.cantidadUnidades),
-          tipoVenta: saleForm.tipoVenta,
-          precioAplicado: finalPrice,
-          total: totalVenta,
-          notas: saleForm.notas
-        };
-
-        setStoreData({
-          ...storeData,
-          sales: [newSale, ...storeData.sales]
+      // Actualizar o crear producto en catálogo
+      const existIdx = storeData.products.findIndex(p => p.modelo.toLowerCase() === modelo.toLowerCase());
+      if (existIdx >= 0) {
+        storeData.products[existIdx].stockDocenas += Math.round(values.totalPrendas / 12);
+        storeData.products[existIdx].costoUnitario = values.cup;
+        storeData.products[existIdx].precioMayor = values.pvMayor;
+      } else {
+        storeData.products.push({
+          id: 'p_' + Date.now(),
+          modelo: modelo,
+          talla: 'M',
+          detalle: 'Confección Propia',
+          costoUnitario: values.cup,
+          precioMayor: values.pvMayor,
+          stockDocenas: Math.round(values.totalPrendas / 12)
         });
-        alert('Venta procesada exitosamente.');
+      }
+
+      saveLocalData();
+      alert('¡Lote de Confección Guardado con Éxito! Se añadieron ' + values.totalPrendas + ' prendas al catálogo.');
+    }
+
+    // === ACCIONES DE VENTAS ===
+    function saveSale(event) {
+      event.preventDefault();
+      const modeloSel = document.getElementById('v-modelo').value;
+      const cantidad = parseInt(document.getElementById('v-cantidad').value) || 0;
+      const formato = document.getElementById('v-formato').value;
+      const precioManual = parseFloat(document.getElementById('v-precio').value);
+
+      const pMatch = storeData.products.find(p => p.modelo === modeloSel);
+      const costoBase = pMatch ? pMatch.costoUnitario : 18.0;
+      const precioSugerido = pMatch ? pMatch.precioMayor : (costoBase * 1.30);
+
+      let precioFinal = precioSugerido;
+      if (formato === 'Cuarta') precioFinal = precioSugerido * 1.15;
+      if (formato === 'Unidad') precioFinal = precioSugerido * 1.30;
+      if (formato === 'Liquidación de Saldo') precioFinal = costoBase * 0.90;
+
+      if (!isNaN(precioManual)) {
+        precioFinal = precioManual;
+      }
+
+      const total = precioFinal * cantidad;
+
+      const newSale = {
+        id: 'sale_' + Date.now(),
+        fecha: new Date().toISOString().split('T')[0],
+        canal: document.getElementById('v-canal').value,
+        modelo: modeloSel,
+        cantidadUnidades: cantidad,
+        tipoVenta: formato,
+        precioAplicado: precioFinal,
+        total: total
       };
 
-      const handleSaveHouseExpense = (e) => {
-        e.preventDefault();
-        const newExp = {
-          id: 'h_' + Date.now(),
-          fecha: houseForm.fecha,
-          categoria: houseForm.categoria,
-          monto: parseFloat(houseForm.monto),
-          descripcion: houseForm.descripcion
-        };
-        setStoreData({
-          ...storeData,
-          householdExpenses: [newExp, ...storeData.householdExpenses]
-        });
-        setHouseForm({ ...houseForm, monto: '', descripcion: '' });
+      storeData.sales.unshift(newSale);
+      saveLocalData();
+      document.getElementById('v-precio').value = '';
+      alert('Venta guardada en Caja: Bs. ' + total);
+    }
+
+    // === REGISTRO GASTO HOGAR ===
+    function saveHouseExpense(event) {
+      event.preventDefault();
+      const cat = document.getElementById('g-categoria').value;
+      const monto = parseFloat(document.getElementById('g-monto').value);
+      const desc = document.getElementById('g-descripcion').value;
+
+      const newExp = {
+        id: 'h_' + Date.now(),
+        fecha: new Date().toISOString().split('T')[0],
+        categoria: cat,
+        monto: monto,
+        descripcion: desc
       };
 
-      // Cálculos del Balance
-      const fixedMonthlySum = Object.values(storeData.fixedExpenses).reduce((a, b) => a + b, 0);
-      const totalVendido = storeData.sales.reduce((sum, s) => sum + s.total, 0);
-      const totalCostoVendido = storeData.sales.reduce((sum, s) => {
+      storeData.householdExpenses.unshift(newExp);
+      saveLocalData();
+      document.getElementById('g-monto').value = '';
+      document.getElementById('g-descripcion').value = '';
+      alert('Gasto Familiar Guardado: Bs. ' + monto);
+    }
+
+    // === SISTEMA DE EXPORTACIÓN OFFLINE WHATSAPP ===
+    function exportData() {
+      const dataStr = btoa(JSON.stringify(storeData));
+      
+      // Intentar copiar al portapapeles con fallback seguro
+      const tempInput = document.createElement("input");
+      tempInput.value = dataStr;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand("copy");
+      document.body.removeChild(tempInput);
+
+      alert("¡Código de sincronización copiado al portapapeles! Abre WhatsApp, mantén presionado en el chat de tu socio y pégale este código.");
+    }
+
+    function importDataPrompt() {
+      const code = prompt("Pega aquí el código que te envió tu socio por WhatsApp:");
+      if (code) {
+        try {
+          const decoded = JSON.parse(atob(code));
+          if (decoded.fixedExpenses && decoded.products) {
+            storeData = decoded;
+            saveLocalData();
+            alert("¡Sincronización Exitosa! Datos actualizados.");
+          } else {
+            alert("El código de sincronización no parece ser válido.");
+          }
+        } catch(e) {
+          alert("Error al procesar el código. Verifica que lo copiaste completo.");
+        }
+      }
+    }
+
+    // === RENDERIZACIÓN DINÁMICA DE LA APP ===
+    function renderAll() {
+      // 1. Selector de Prendas en pestaña Ventas
+      const vSelector = document.getElementById('v-modelo');
+      vSelector.innerHTML = '';
+      storeData.products.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.modelo;
+        opt.innerText = `${p.modelo} - Talla ${p.talla} (Costo: Bs. ${p.costoUnitario.toFixed(1)})`;
+        vSelector.appendChild(opt);
+      });
+
+      // 2. Historial de Ventas
+      const lVentas = document.getElementById('lista-ventas');
+      lVentas.innerHTML = '';
+      storeData.sales.slice(0, 10).forEach(s => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><b>${s.modelo}</b></td>
+          <td>${s.canal}</td>
+          <td class="text-right">${s.cantidadUnidades} u</td>
+          <td class="text-right text-success font-mono"><b>Bs. ${s.total}</b></td>
+        `;
+        lVentas.appendChild(row);
+      });
+
+      // 3. Gastos Fijos
+      const lFijos = document.getElementById('lista-gastos-fijos');
+      lFijos.innerHTML = '';
+      const fKeys = {
+        alquilerTienda: 'Alquiler Tienda Central',
+        alquilerMananera: 'Alquiler Tienda Mañanera',
+        alquilerCasaTaller: 'Alquiler Vivienda/Taller',
+        luz: 'Electricidad (Luz)',
+        agua: 'Agua Potable',
+        internet: 'Conexión Internet',
+        prestamoBanco: 'Cuota Préstamo Banco'
+      };
+      
+      let sumFijos = 0;
+      Object.entries(storeData.fixedExpenses).forEach(([k, val]) => {
+        sumFijos += val;
+        const item = document.createElement('div');
+        item.className = 'list-item';
+        item.innerHTML = `<span>${fKeys[k]}</span><span class="font-mono text-danger">Bs. ${val}</span>`;
+        lFijos.appendChild(item);
+      });
+
+      const totalFijos = document.createElement('div');
+      totalFijos.className = 'list-item';
+      totalFijos.style.borderColor = 'var(--color-warning)';
+      totalFijos.innerHTML = `<span style="font-weight:bold; color:var(--color-warning)">EGRESOS MENSUALES TOTALES:</span><span class="font-mono text-warning" style="font-weight:bold">Bs. ${sumFijos}</span>`;
+      lFijos.appendChild(totalFijos);
+
+      // 4. Balance General
+      const totalIngresos = storeData.sales.reduce((sum, s) => sum + s.total, 0);
+      const totalCostosProduccion = storeData.sales.reduce((sum, s) => {
         const match = storeData.products.find(p => p.modelo === s.modelo);
-        return sum + ((match ? match.costoUnitario : 18) * s.cantidadUnidades);
+        return sum + ((match ? match.costoUnitario : 18.0) * s.cantidadUnidades);
       }, 0);
-      const utilidadBruta = totalVendido - totalCostoVendido;
-      const totalGastosCasa = storeData.householdExpenses.reduce((sum, h) => sum + h.monto, 0);
-      const flujoNeto = utilidadBruta - fixedMonthlySum - totalGastosCasa;
+      const utBruta = totalIngresos - totalCostosProduccion;
+      const totalHogar = storeData.householdExpenses.reduce((sum, h) => sum + h.monto, 0);
+      const exNeto = utBruta - sumFijos - totalHogar;
 
-      // Planificación Estacional (Bolivia)
+      document.getElementById('b-ingresos').innerText = `Bs. ${totalIngresos.toLocaleString('es-BO')}`;
+      document.getElementById('b-costos').innerText = `Bs. ${totalCostosProduccion.toLocaleString('es-BO')}`;
+      document.getElementById('b-utilidad-bruta').innerText = `Bs. ${utBruta.toLocaleString('es-BO')}`;
+      document.getElementById('b-fijos').innerText = `Bs. ${sumFijos.toLocaleString('es-BO')}`;
+      document.getElementById('b-familiares').innerText = `Bs. ${totalHogar.toLocaleString('es-BO')}`;
+      
+      const bNeto = document.getElementById('b-neto');
+      bNeto.innerText = `Bs. ${exNeto.toLocaleString('es-BO')}`;
+      if (exNeto >= 0) {
+        bNeto.className = 'metric-value text-success';
+      } else {
+        bNeto.className = 'metric-value text-danger';
+      }
+
+      // 5. Proyecciones
+      const lProy = document.getElementById('lista-proyecciones');
+      lProy.innerHTML = '';
       const mesesLabels = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
       const currentMonthIdx = new Date().getMonth();
       const seasonMultipliers = [0.6, 0.6, 0.7, 1.5, 1.7, 1.5, 1.4, 0.8, 0.7, 0.8, 1.8, 2.2];
 
-      const proyecciones = Array.from({ length: 12 }, (_, i) => {
+      const baseVenta = totalIngresos > 0 ? totalIngresos : 14000;
+      const baseCosto = totalCostosProduccion > 0 ? totalCostosProduccion : 9000;
+
+      for(let i=0; i<12; i++) {
         const idx = (currentMonthIdx + i) % 12;
         const mult = seasonMultipliers[idx];
-        const ingProj = (totalVendido > 0 ? totalVendido : 12000) * mult;
-        return {
-          mes: mesesLabels[idx],
-          ingresos: Math.round(ingProj),
-          egresos: Math.round(((totalCostoVendido > 0 ? totalCostoVendido : 8000) * mult) + fixedMonthlySum)
-        };
-      });
+        const vEst = baseVenta * mult;
+        const cEst = baseCosto * mult;
+        const neto = vEst - cEst - sumFijos - (totalHogar || 1500);
 
-      return (
-        <div class="flex-grow flex flex-col min-h-0 select-none pb-safe">
-          <header class="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-15 shadow-md">
-            <h1 class="text-md font-bold tracking-tight text-white flex items-center gap-2">
-              👔 FinaPro <span class="text-[10px] bg-indigo-950 text-indigo-400 px-2 py-0.5 rounded font-mono border border-indigo-900">Fashion v3.0</span>
-            </h1>
-            <p class="text-[11px] text-slate-400">Control de Confección, Mesa de Corte y Ventas de Feria</p>
-          </header>
-
-          <main class="flex-grow overflow-y-auto p-4 space-y-4">
-            
-            {/* TABS DE SECCIÓN */}
-            <div class="grid grid-cols-5 bg-slate-900 p-1 rounded-xl border border-slate-800 text-center text-xs font-semibold">
-              <button onClick={() => setActiveTab('produccion')} class={`py-2 rounded-lg ${activeTab === 'produccion' ? 'bg-indigo-600 text-white' : 'text-slate-400'}`}>✂️</button>
-              <button onClick={() => setActiveTab('ventas')} class={`py-2 rounded-lg ${activeTab === 'ventas' ? 'bg-indigo-600 text-white' : 'text-slate-400'}`}>🛍️</button>
-              <button onClick={() => setActiveTab('gastos')} class={`py-2 rounded-lg ${activeTab === 'gastos' ? 'bg-indigo-600 text-white' : 'text-slate-400'}`}>🏠</button>
-              <button onClick={() => setActiveTab('balance')} class={`py-2 rounded-lg ${activeTab === 'balance' ? 'bg-indigo-600 text-white' : 'text-slate-400'}`}>📊</button>
-              <button onClick={() => setActiveTab('proyecciones')} class={`py-2 rounded-lg ${activeTab === 'proyecciones' ? 'bg-indigo-600 text-white' : 'text-slate-400'}`}>📈</button>
-            </div>
-
-            {/* TAB: PRODUCCIÓN */}
-            {activeTab === 'produccion' && (
-              <div class="space-y-4">
-                <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-3">
-                  <h3 class="text-sm font-bold text-white">📐 Tizada en Mesa de Corte</h3>
-                  <form onSubmit={handleSaveProduction} class="space-y-3 text-xs">
-                    <div class="grid grid-cols-2 gap-3">
-                      <div>
-                        <label class="text-slate-400 block mb-1">Modelo</label>
-                        <input type="text" value={calcForm.modelo} onChange={e => setCalcForm({...calcForm, modelo: e.target.value})} class="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-850 text-white" />
-                      </div>
-                      <div>
-                        <label class="text-slate-400 block mb-1">Corte (m)</label>
-                        <input type="number" step="any" value={calcForm.largoCorte} onChange={e => setCalcForm({...calcForm, largoCorte: parseFloat(e.target.value) || 0})} class="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-850 text-white font-mono" />
-                      </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-3">
-                      <div>
-                        <label class="text-slate-400 block mb-1">Precio Tela/m</label>
-                        <input type="number" value={calcForm.precioTelaMetro} onChange={e => setCalcForm({...calcForm, precioTelaMetro: parseFloat(e.target.value) || 0})} class="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-850 text-white font-mono" />
-                      </div>
-                      <div>
-                        <label class="text-slate-400 block mb-1">Costo Costura</label>
-                        <input type="number" step="any" value={calcForm.costoCostura} onChange={e => setCalcForm({...calcForm, costoCostura: parseFloat(e.target.value) || 0})} class="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-850 text-white font-mono" />
-                      </div>
-                    </div>
-                    <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-2.5 rounded-xl text-xs">Guardar Lote de Producción</button>
-                  </form>
-                </div>
-
-                <div class="bg-gradient-to-br from-indigo-950 to-slate-900 border border-indigo-900/40 p-4 rounded-xl text-center space-y-1">
-                  <span class="text-[10px] text-indigo-400 uppercase font-bold block">Costo Unitario Esperado (CUP)</span>
-                  <span class="text-2xl font-extrabold text-emerald-400 block">Bs. {currentCUP.cup.toFixed(2)}</span>
-                  <span class="text-[10px] text-slate-300 block">Mayor sugerido: Bs. {currentCUP.pvMayor.toFixed(1)} (30% ganancia)</span>
-                </div>
-              </div>
-            )}
-
-            {/* TAB: VENTAS */}
-            {activeTab === 'ventas' && (
-              <div class="space-y-4">
-                <form onSubmit={handleSaveSale} class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-3 text-xs">
-                  <h3 class="text-sm font-bold text-white">🛍️ Nueva Venta de Feria</h3>
-                  <div>
-                    <label class="text-slate-400 block mb-1">Canal de Venta</label>
-                    <select value={saleForm.canal} onChange={e => setSaleForm({...saleForm, canal: e.target.value})} class="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-850 text-white">
-                      <option value="Tienda Central (Miér/Sáb)">Tienda Central (Miércoles/Sábado)</option>
-                      <option value="Venta Madrugadora">Venta Mañanera (5:00 AM - 7:00 AM)</option>
-                      <option value="WhatsApp">WhatsApp / Transferencia directa</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label class="text-slate-400 block mb-1">Prenda</label>
-                    <select value={saleForm.modelo} onChange={e => setSaleForm({...saleForm, modelo: e.target.value})} class="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-850 text-white">
-                      {storeData.products.map(p => (
-                        <option key={p.id} value={p.modelo}>{p.modelo} ({p.talla})</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div class="grid grid-cols-2 gap-3">
-                    <div>
-                      <label class="text-slate-400 block mb-1">Cantidad (U.)</label>
-                      <input type="number" value={saleForm.cantidadUnidades} onChange={e => setSaleForm({...saleForm, cantidadUnidades: e.target.value})} class="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-850 text-white font-mono" />
-                    </div>
-                    <div>
-                      <label class="text-slate-400 block mb-1">Tipo de Venta</label>
-                      <select value={saleForm.tipoVenta} onChange={e => setSaleForm({...saleForm, tipoVenta: e.target.value})} class="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-850 text-white">
-                        <option value="Mayor">Mayor (Docena)</option>
-                        <option value="Cuarta">Por Cuarta</option>
-                        <option value="Unidad">Por Unidad</option>
-                        <option value="Liquidación de Saldo">Saldo</option>
-                      </select>
-                    </div>
-                  </div>
-                  <button type="submit" class="w-full bg-emerald-600 text-slate-950 font-bold py-2.5 rounded-xl text-xs">Registrar en Caja de Feria</button>
-                </form>
-
-                <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2">
-                  <h4 class="text-xs font-bold text-slate-400 uppercase">Ventas Recientes</h4>
-                  <div class="divide-y divide-slate-850">
-                    {storeData.sales.map(s => (
-                      <div key={s.id} class="flex justify-between items-center py-2 text-xs">
-                        <div>
-                          <span class="text-white font-semibold block">{s.modelo}</span>
-                          <span class="text-[10px] text-slate-400">{s.canal} ({s.tipoVenta})</span>
-                        </div>
-                        <span class="font-extrabold text-emerald-400 font-mono">Bs. {s.total}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* TAB: GASTOS */}
-            {activeTab === 'gastos' && (
-              <div class="space-y-4">
-                <form onSubmit={handleSaveHouseExpense} class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-3 text-xs">
-                  <h3 class="text-sm font-bold text-white">🏠 Control de Gastos del Hogar</h3>
-                  <div class="grid grid-cols-2 gap-3">
-                    <div>
-                      <label class="text-slate-400 block mb-1">Categoría</label>
-                      <select value={houseForm.categoria} onChange={e => setHouseForm({...houseForm, categoria: e.target.value})} class="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-850 text-white">
-                        <option value="Alimentación">Alimentación</option>
-                        <option value="Salud">Salud</option>
-                        <option value="Educación">Educación</option>
-                        <option value="Hogar">Hogar</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label class="text-slate-400 block mb-1">Monto (Bs)</label>
-                      <input type="number" value={houseForm.monto} onChange={e => setHouseForm({...houseForm, monto: e.target.value})} class="w-full bg-slate-950 p-2.5 rounded-lg border border-slate-850 text-white font-mono" required />
-                    </div>
-                  </div>
-                  <button type="submit" class="w-full bg-rose-600 text-white font-bold py-2.5 rounded-xl text-xs">Guardar Gasto Familiar</button>
-                </form>
-
-                <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2">
-                  <h4 class="text-xs font-bold text-slate-400 uppercase">Egresos Fijos Mensuales</h4>
-                  <div class="text-xs space-y-1 text-slate-300">
-                    <div class="flex justify-between"><span>Alquileres (Tienda+Taller):</span><span class="font-bold text-white">Bs. 2900</span></div>
-                    <div class="flex justify-between"><span>Banco:</span><span class="font-bold text-rose-400">Bs. 1700</span></div>
-                    <div class="flex justify-between"><span>Servicios básicos:</span><span class="font-bold text-white">Bs. 570</span></div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* TAB: BALANCE */}
-            {activeTab === 'balance' && (
-              <div class="space-y-4">
-                <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-3">
-                  <h3 class="text-sm font-bold text-white">📊 Estado de Resultados Mensuales</h3>
-                  <div class="space-y-2 text-xs">
-                    <div class="flex justify-between py-1 border-b border-slate-850"><span>Ingresos Brutos:</span><span class="font-bold text-emerald-400 font-mono">Bs. {totalVendido.toLocaleString('es-BO')}</span></div>
-                    <div class="flex justify-between py-1 border-b border-slate-850"><span>Inversión Producción:</span><span class="font-bold text-rose-400 font-mono">Bs. {totalCostoVendido.toLocaleString('es-BO')}</span></div>
-                    <div class="flex justify-between py-1 border-b border-slate-850"><span>Gastos Fijos Operación:</span><span class="font-bold text-slate-400 font-mono">Bs. {fixedMonthlySum.toLocaleString('es-BO')}</span></div>
-                    <div class="flex justify-between py-1 border-b border-slate-850"><span>Gastos del Hogar:</span><span class="font-bold text-slate-400 font-mono">Bs. {totalGastosCasa.toLocaleString('es-BO')}</span></div>
-                    <div class="flex justify-between p-3 bg-slate-950 rounded-lg text-sm font-extrabold text-indigo-400">
-                      <span>Excedente Neto Líquido:</span>
-                      <span>Bs. {flujoNeto.toLocaleString('es-BO')}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* TAB: PROYECCIÓN */}
-            {activeTab === 'proyecciones' && (
-              <div class="space-y-3">
-                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Simulación de Tendencias con Estacionalidad</h3>
-                <div class="space-y-2 max-h-96 overflow-y-auto">
-                  {proyecciones.map((p, i) => (
-                    <div key={i} class="bg-slate-900 border border-slate-800 p-3 rounded-lg flex justify-between items-center text-xs">
-                      <span class="font-bold text-white">{p.mes}</span>
-                      <div class="text-right">
-                        <span class="text-emerald-400 block font-mono">Ing: Bs. {p.ingresos.toLocaleString('es-BO')}</span>
-                        <span class="text-slate-500 block font-mono">Egr: Bs. {p.egresos.toLocaleString('es-BO')}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-          </main>
-        </div>
-      );
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><b>${mesesLabels[idx]}</b></td>
+          <td class="text-right text-success font-mono">Bs. ${Math.round(vEst)}</td>
+          <td class="text-right text-danger font-mono">Bs. ${Math.round(cEst + sumFijos)}</td>
+          <td class="text-right font-mono ${neto >= 0 ? 'text-success' : 'text-danger'}"><b>Bs. ${Math.round(neto)}</b></td>
+        `;
+        lProy.appendChild(row);
+      }
     }
-
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<App />);
   </script>
 </body>
 </html>
+
+
 
